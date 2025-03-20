@@ -3,19 +3,11 @@ package repositories
 import (
 	"backend/config"
 	"backend/models"
-	"database/sql"
 	"log"
-	"os"
 )
 
 // 画像情報を取得
 func GetPhotoURLs() ([]models.Photo, error) {
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
 	rows, err := config.DB.Query("SELECT id, title, url FROM photos")
 	if err != nil {
 		return nil, err
@@ -26,18 +18,10 @@ func GetPhotoURLs() ([]models.Photo, error) {
 	for rows.Next() {
 		// タイトルとURLがnullの場合を考慮
 		var photo models.Photo
-		var title sql.NullString
-		var url sql.NullString
-
 		// 確認
-		if err := rows.Scan(&photo.ID, &title, &url); err != nil {
+		if err := rows.Scan(&photo.ID, &photo.Title, &photo.URL); err != nil {
 			return nil, err
 		}
-
-		// NULLの場合は空文字を代入
-		photo.Title = title.String
-		photo.URL = url.String
-
 		photos = append(photos, photo)
 	}
 
