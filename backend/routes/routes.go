@@ -8,4 +8,5 @@ import (
 
 func SetupRoutes(r *gin.Engine) {
 	r.GET("/api/photos", handlers.GetPhotos)
+	r.POST("/api/upload", handlers.UploadPhotos)
 }

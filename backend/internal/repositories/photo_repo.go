@@ -3,6 +3,7 @@ package repositories
 import (
 	"backend/config"
 	"backend/models"
+	"log"
 )
 
 // 画像情報を取得
@@ -23,4 +24,15 @@ func FetchPhotos() ([]models.Photo, error) {
 	}
 
 	return photos, nil
+}
+
+// 写真データをDBへ保存
+func SavePhoto(title, url string) error {
+	_, err := config.DB.Exec("INSERT INTO photos (title, url) VALUES ($1, $2)", title, url)
+	if err != nil {
+		log.Println("SavePhoto: データ保存エラー", err)
+		return err
+	}
+
+	return nil
 }

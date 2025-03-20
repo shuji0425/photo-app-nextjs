@@ -35,4 +35,20 @@ func ConnectDB() {
 	}
 
 	fmt.Println("DB接続成功")
+
+	// テーブル作成
+	createTableQuery := `
+	CREATE TABLE IF NOT EXISTS photos (
+	    id SERIAL PRIMARY KEY,
+	    title TEXT NOT NULL,
+	    url TEXT NOT NULL,
+	    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	);
+	`
+	_, err = DB.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal("🚨 テーブル作成エラー:", err)
+	} else {
+		fmt.Println("✅ `photos` テーブルの確認完了")
+	}
 }

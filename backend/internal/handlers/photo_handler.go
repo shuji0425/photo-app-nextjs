@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 画像情報取得
 func GetPhotos(c *gin.Context) {
 	photos, err := services.GetAllPhotos()
 	if err != nil {
