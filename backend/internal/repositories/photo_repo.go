@@ -3,12 +3,20 @@ package repositories
 import (
 	"backend/config"
 	"backend/models"
+	"database/sql"
 	"log"
+	"os"
 )
 
 // 画像情報を取得
-func FetchPhotos() ([]models.Photo, error) {
-	rows, err := config.DB.Query("SELECT * FROM photos")
+func GetPhotoURLs() ([]models.Photo, error) {
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	rows, err := config.DB.Query("SELECT id, title, url FROM photos")
 	if err != nil {
 		return nil, err
 	}
@@ -16,11 +24,21 @@ func FetchPhotos() ([]models.Photo, error) {
 
 	var photos []models.Photo
 	for rows.Next() {
-		var p models.Photo
-		if err := rows.Scan(&p.ID, &p.Title, &p.URL); err != nil {
+		// タイトルとURLがnullの場合を考慮
+		var photo models.Photo
+		var title sql.NullString
+		var url sql.NullString
+
+		// 確認
+		if err := rows.Scan(&photo.ID, &title, &url); err != nil {
 			return nil, err
 		}
-		photos = append(photos, p)
+
+		// NULLの場合は空文字を代入
+		photo.Title = title.String
+		photo.URL = url.String
+
+		photos = append(photos, photo)
 	}
 
 	return photos, nil

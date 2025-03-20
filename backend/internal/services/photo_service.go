@@ -19,8 +19,8 @@ const bucketName = "photo-bucket"
 var tempDir = filepath.Join("uploads", "tmp")
 
 // 全ての画像情報を取得
-func GetAllPhotos() ([]models.Photo, error) {
-	return repositories.FetchPhotos()
+func FetchPhotoURLs() ([]models.Photo, error) {
+	return repositories.GetPhotoURLs()
 }
 
 // アップロード
