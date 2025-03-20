@@ -4,6 +4,7 @@ import (
 	"backend/config"
 	"backend/internal/repositories"
 	"backend/models"
+	"backend/storage"
 	"context"
 	"fmt"
 	"mime/multipart"
@@ -22,33 +23,31 @@ func FetchPhotoURLs() ([]models.Photo, error) {
 // アップロード
 func UploadPhoto(file *multipart.FileHeader) (string, error) {
 	fileName := fmt.Sprintf("%d-%s", time.Now().UnixNano(), file.Filename)
-
-	// ファイルを一時保存
+	// ファイルを開く
 	src, err := file.Open()
 	if err != nil {
 		return "", fmt.Errorf("ファイルを開けませんでした: %w", err)
 	}
 	defer src.Close()
 
-	// minioにアップロード
-	_, err = config.MinioClient.PutObject(
-		context.Background(), bucketName, fileName, src, file.Size,
-		minio.PutObjectOptions{ContentType: "image/jpeg"},
-	)
-
+	// 画像をリサイズ(800px幅)
+	resizedImage, err := ResizeImage(src, 800)
 	if err != nil {
-		return "", fmt.Errorf("minioアップロード失敗: %w", err)
+		return "", fmt.Errorf("リサイズ処理失敗: %w", err)
 	}
 
-	// アップロード後のurl
-	photoURL := fmt.Sprintf("http://localhost:9000/%s/%s", bucketName, fileName)
+	// minioにアップロード
+	url, err := storage.UploadToMinio(fileName, resizedImage)
+	if err != nil {
+		return "", fmt.Errorf("MinIOアップロードエラー: %w", err)
+	}
 
 	// DBへ保存
-	if err := repositories.SavePhoto(file.Filename, photoURL); err != nil {
+	if err := repositories.SavePhoto(file.Filename, url); err != nil {
 		config.MinioClient.RemoveObject(context.Background(), bucketName, fileName, minio.RemoveObjectOptions{})
 
 		return "", fmt.Errorf("DB保存失敗: %w", err)
 	}
 
-	return photoURL, nil
+	return url, nil
 }
