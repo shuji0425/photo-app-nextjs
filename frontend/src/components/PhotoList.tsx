@@ -1,47 +1,37 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { usePhotos } from "@/hooks/usePhotos";
+import { Suspense, lazy } from "react";
 
-type Photo = {
-  id: number;
-  url: string;
-  title: string;
-};
+const PhotoItem = lazy(() => import("./PhotoItem"));
 
 export default function PhotoList() {
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const { photos, isLoading, error } = usePhotos();
 
-  useEffect(() => {
-    const fetchPhotos = async () => {
-      try {
-        const res = await fetch("/api/photos");
-        const data = await res.json();
-        setPhotos(data.photos);
-      } catch (error) {
-        console.error("Failed to fetch photos", error);
-      }
-    }
-    fetchPhotos();
-  }, []);
+  if (isLoading) {
+    return (
+      <p className="text-sm text-center font-semibold mt-2">読み込み中...</p>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-sm text-center font-semibold text-red-500">{error}</p>
+    );
+  }
 
   // 画像を登録してないとき
-  if (!photos) {
-    return (
-      <p className="text-sm text-center font-semibold mt-2">準備中です</p>
-    )
+  if (photos.length === 0) {
+    return <p className="text-sm text-center font-semibold mt-2">準備中です</p>;
   }
 
   return (
+    <Suspense fallback={<p className="text-sm text-center mt-2">画像を読み込み中...</p>}>
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
       {photos.map((photo) => (
-        <div key={photo.id} className="shadow-md rounded-lg overflow-hidden">
-          <Image src={photo.url} alt={photo.title} width={300} height={200} className="w-full h-auto" />
-          <div className="p-2 bg-white">
-            <p className="text-sm text-center font-semibold mt-2">{photo.title}</p>
-          </div>
-        </div>
+        <PhotoItem key={photo.id} photo={photo} />
       ))}
     </div>
-  )
+    </Suspense>
+  );
 }
