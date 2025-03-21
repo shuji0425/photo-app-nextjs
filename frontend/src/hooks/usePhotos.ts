@@ -12,9 +12,9 @@ export const usePhotos = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPhotos = async () => {
+    const fetchPhotos = async (limit?: number) => {
       try {
-        const res = await fetch("/api/photos");
+        const res = await fetch(`/api/photos?limit=${limit}`);
         if (!res.ok) {
           throw new Error("Failed to fetch photos");
         }
@@ -28,7 +28,7 @@ export const usePhotos = () => {
       }
     }
 
-    fetchPhotos();
+    fetchPhotos(30);
   }, []);
 
   return { photos, isLoading, error };

@@ -3,12 +3,23 @@ package repositories
 import (
 	"backend/config"
 	"backend/models"
+	"database/sql"
 	"log"
 )
 
 // 画像情報を取得
-func GetPhotoURLs() ([]models.Photo, error) {
-	rows, err := config.DB.Query("SELECT id, title, url FROM photos")
+func GetPhotoURLs(limit int) ([]models.Photo, error) {
+	var rows *sql.Rows
+	var err error
+
+	query := "SELECT id, title, url FROM photos"
+	if limit > 0 {
+		query = "SELECT id, title, url FROM photos LIMIT $1"
+		rows, err = config.DB.Query(query, limit)
+	} else {
+		rows, err = config.DB.Query(query)
+	}
+
 	if err != nil {
 		return nil, err
 	}
