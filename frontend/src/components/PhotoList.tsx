@@ -1,14 +1,11 @@
 "use client";
 
-import { Suspense, lazy } from "react";
-import { useInfinitePhotos } from "@/hooks/useInfinitePhotos";
-import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
-
-const PhotoItem = lazy(() => import("./PhotoItem"));
+import PhotoItem from "./PhotoItem";
+import { useVirtualPhotoList } from "@/hooks/useVirtualPhotoList";
 
 export default function PhotoList() {
-  const { photos, loadMore, hasMore, isLoading, error } = useInfinitePhotos();
-  const { sentinelRef } = useInfiniteScroll({ hasMore, loadMore });
+  const { visiblePhotos, observerRef, isLoading, error } =
+    useVirtualPhotoList();
 
   if (error) {
     return (
@@ -27,17 +24,11 @@ export default function PhotoList() {
 
   return (
     <>
-      <Suspense
-        fallback={
-          <p className="text-sm text-center mt-2">画像を読み込み中...</p>
-        }
-      >
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-          {photos.map((photo, index) => (
-            <PhotoItem key={photo.id} photo={photo} index={index} />
-          ))}
-        </div>
-      </Suspense>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+        {visiblePhotos.map((photo, index) => (
+          <PhotoItem key={photo.id} photo={photo} index={index} />
+        ))}
+      </div>
 
       {/* 読み込み中表示 */}
       {isLoading && (
@@ -45,7 +36,7 @@ export default function PhotoList() {
       )}
 
       {/* 監視用のセントリネル */}
-      {hasMore && <div ref={sentinelRef} className="h-10" />}
+      {<div ref={observerRef} className="h-10" />}
     </>
   );
 }

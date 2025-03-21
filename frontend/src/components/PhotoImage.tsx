@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useElementOnScreen } from "@/hooks/useElementOnScreen";
+import { useIdle } from "@/hooks/useIdle";
 
 type PhotoImageProps = {
   photo: {
@@ -16,12 +17,13 @@ type PhotoImageProps = {
 // UI構成
 export default function PhotoImage({ photo, index }: PhotoImageProps) {
   const [ref, isVisible] = useElementOnScreen();
+  const isIdle = useIdle();
   const [isLoading, setIsLoading] = useState(false);
   const isPriority = index < 3;
 
   return (
     <div ref={ref} className="relative min-h-[200px]">
-      {isVisible ? (
+      {isVisible && isIdle ? (
         <>
           {isLoading && (
             <div className="absolute inset-0 bg-gray-300 animate-pulse z-0" />
@@ -43,7 +45,7 @@ export default function PhotoImage({ photo, index }: PhotoImageProps) {
         </>
       ) : (
         // プレースホルダー表示
-        <div className="w-full h-[200px] bg-gray-100 animate-pulse" />
+        <div className="w-full h-[200px] bg-gray-100 animate-pulse rounded-lg" />
       )}
     </div>
   );

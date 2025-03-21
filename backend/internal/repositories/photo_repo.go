@@ -12,7 +12,7 @@ func GetPhotoURLs(limit, offset int) ([]models.Photo, error) {
 	var rows *sql.Rows
 	var err error
 
-	query := "SELECT id, title, url FROM photos"
+	query := "SELECT id, title, url FROM photos ORDER BY id DESC"
 	if limit > 0 {
 		query += " LIMIT $1 OFFSET $2"
 		rows, err = config.DB.Query(query, limit, offset)

@@ -1,5 +1,5 @@
 import { Photo } from "@/types/types";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const LIMIT = 20;
 
@@ -39,6 +39,11 @@ export const useInfinitePhotos = () => {
       setIsLoading(false);
     }
   }, [page, isLoading, hasMore]);
+
+  // 初回マウント時に読み込み
+  useEffect(() => {
+    loadMore();
+  }, [loadMore]);
 
   return { photos, isLoading, hasMore, error, loadMore };
 };
