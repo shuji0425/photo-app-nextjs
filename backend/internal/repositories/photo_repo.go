@@ -8,14 +8,14 @@ import (
 )
 
 // 画像情報を取得
-func GetPhotoURLs(limit int) ([]models.Photo, error) {
+func GetPhotoURLs(limit, offset int) ([]models.Photo, error) {
 	var rows *sql.Rows
 	var err error
 
 	query := "SELECT id, title, url FROM photos"
 	if limit > 0 {
-		query = "SELECT id, title, url FROM photos LIMIT $1"
-		rows, err = config.DB.Query(query, limit)
+		query += " LIMIT $1 OFFSET $2"
+		rows, err = config.DB.Query(query, limit, offset)
 	} else {
 		rows, err = config.DB.Query(query)
 	}

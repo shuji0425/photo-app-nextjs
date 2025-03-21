@@ -16,8 +16,8 @@ import (
 const bucketName = "photo-bucket"
 
 // 全ての画像情報を取得
-func FetchPhotoURLs(limit int) ([]models.Photo, error) {
-	return repositories.GetPhotoURLs(limit)
+func FetchPhotoURLs(limit, offset int) ([]models.Photo, error) {
+	return repositories.GetPhotoURLs(limit, offset)
 }
 
 // アップロード

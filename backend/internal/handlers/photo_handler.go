@@ -10,14 +10,14 @@ import (
 
 // 画像情報取得
 func GetPhotos(c *gin.Context) {
-	limitParam := c.Query("limit")
-	limit, err := strconv.Atoi(limitParam)
-	// エラーとlimitが0以下は0とする
-	if err != nil || limit <= 0 {
-		limit = 0
-	}
+	// 検索条件の取得
+	limitParam := c.DefaultQuery("limit", "20")
+	offsetParam := c.DefaultQuery("offset", "0")
+	limit, _ := strconv.Atoi(limitParam)
+	offset, _ := strconv.Atoi(offsetParam)
 
-	photos, err := services.FetchPhotoURLs(limit)
+	// データ取得
+	photos, err := services.FetchPhotoURLs(limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "データ取得に失敗しました"})
 		return
