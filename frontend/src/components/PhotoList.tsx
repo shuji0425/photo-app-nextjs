@@ -28,8 +28,8 @@ export default function PhotoList() {
   return (
     <Suspense fallback={<p className="text-sm text-center mt-2">画像を読み込み中...</p>}>
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-      {photos.map((photo) => (
-        <PhotoItem key={photo.id} photo={photo} />
+      {photos.map((photo, index) => (
+        <PhotoItem key={photo.id} photo={photo} index={index} />
       ))}
     </div>
     </Suspense>
