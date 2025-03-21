@@ -31,7 +31,7 @@ const PhotoItem = ({ photo, index }: PhotoProps) => {
         priority={isPriority} // LCPの画像を優先ロード
         loading={isPriority ? "eager" : "lazy"}
         className={`w-full h-auto object-cover rounded-lg shadow-md z-10 transition-opacity duration-700 ease-in-out ${
-          isLoading ? "opacity-20" : "opacity-100"
+          isLoading ? "opacity-50" : "opacity-100"
         }`}
         onLoad={() => setIsLoading(false)}
       />
