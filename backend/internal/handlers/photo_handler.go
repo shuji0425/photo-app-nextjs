@@ -8,6 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 上限100件
+const MaxLimit = 100
+
 // 画像情報取得
 func GetPhotos(c *gin.Context) {
 	// 検索条件の取得
@@ -15,6 +18,10 @@ func GetPhotos(c *gin.Context) {
 	offsetParam := c.DefaultQuery("offset", "0")
 	limit, _ := strconv.Atoi(limitParam)
 	offset, _ := strconv.Atoi(offsetParam)
+
+	if limit > MaxLimit {
+		limit = MaxLimit
+	}
 
 	// データ取得
 	photos, err := services.FetchPhotoURLs(limit, offset)
