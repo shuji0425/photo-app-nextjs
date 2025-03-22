@@ -9,6 +9,7 @@ type Props = {
 
 // 個別の画像カード
 function PhotoCard({ photo, index }: Props) {
+  const isLCPImage = index < 2;
   return (
     <div className="w-full aspect-[3/2] relative rounded-xl overflow-hidden shadow-sm">
       <Image
@@ -17,8 +18,8 @@ function PhotoCard({ photo, index }: Props) {
         fill
         sizes="(max-width: 640px) 100vw, 50vw"
         className="object-cover"
-        loading={index < 2 ? "eager" : "lazy"}
-        priority={index < 2}
+        loading={isLCPImage ? "eager" : "lazy"}
+        priority={isLCPImage}
       />
     </div>
   );
